@@ -64,8 +64,9 @@
                         <td scope="row">{{ snippet.id }}</td>
                         <td><a href="{% url "sn_detail" snippet.id %}">{{ snippet.name }}</a>
                             <a href="{% url "sn_delete" snippet.id %}">
-                                <i style="color: red;" class='fa-solid fa-trash'></i>
-                            </a>
+                                <i style="color: red;" class='fa-solid fa-trash'></i></a>
+                            <a href="{% url "sn_edit" snippet.id %}">
+                                <i style="color: blue;" class='fas fa-edit'></i></a>
                         </td>
                         <td>{{ snippet.creation_date | date:"Y-m-d h:m:s"}}</td>
                         <td><a href="{% url "sn_delete" snippet.id %}">Удалить</a></td>
