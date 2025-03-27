@@ -1,5 +1,5 @@
 from django.http import Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from MainApp.models import Snippet
 from .forms import SnippetForm
 from django.core.exceptions import ObjectDoesNotExist
@@ -35,21 +35,22 @@ def snippets_page(request):
     return render(request, 'pages/view_snippets.html', context)
 
 def snippets_detail(request, id):
+    context = {'pagename': 'Просмотр сниппета'}
     try:
         snippet = Snippet.objects.get(pk=id)
     except ObjectDoesNotExist:
         return HttpResponseNotFound(f"<b>Сниппет не найден</b>")
     else:
-        context = {'snippet': snippet,
-                   'pagename': 'Описание сниппета'}
+        context['snippet'] = snippet
+        context['type'] = 'view'
+
         return render(request, 'pages/snippet_detail.html', context) 
 
-# def create_snippet(request):
-#     from pprint import pprint
+def snippets_edit(request, id):
+    pass
 
-#     if request.method == 'POST':
-#         form = SnippetForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect("sn_list")
-#         return render(request, "pages/add_snippet.html", {'form': form})
+def snippets_delete(request, id):
+    if request.method == "POST" or request.method == "GET":
+        snippet = get_object_or_404(Snippet, id=id)
+        snippet.delete()
+    return redirect('sn_list')
