@@ -41,7 +41,7 @@ def my_snippets(request):
     return render(request, 'pages/view_snippets.html', context)
 
 def snippets_page(request):
-    snippets = Snippet.objects.all()
+    snippets = Snippet.objects.filter(public=True)
     context = {'pagename': 'Просмотр сниппетов',
                'snippets': snippets}
     return render(request, 'pages/view_snippets.html', context)
@@ -58,10 +58,11 @@ def snippets_detail(request, id):
 
         return render(request, 'pages/snippet_detail.html', context) 
 
+@login_required
 def snippets_edit(request, id):
     context = {'pagename': 'Редактирование сниппета'}
     try:
-        snippet = Snippet.objects.get(pk=id)
+        snippet = Snippet.objects.filter(user=request.user).get(pk=id)
     except ObjectDoesNotExist:
         return Http404
     # Хотим получить страницу с данными сниппета
@@ -78,14 +79,16 @@ def snippets_edit(request, id):
         snippet.name = data_form['name']
         # snippet.lang = data_form['lang']
         snippet.code = data_form['code']
+        #Если ключ public есть в словаре, берем значкение. Если нет - присваеваем False
+        snippet.public = data_form.get('public', False)
         snippet.creation_date = data_form['creation_date']
         snippet.save()
         return redirect("sn_list")
 
-
+@login_required
 def snippets_delete(request, id):
     if request.method == "POST" or request.method == "GET":
-        snippet = get_object_or_404(Snippet, id=id)
+        snippet = get_object_or_404(Snippet.objects.filter(user=request.user), id=id)
         snippet.delete()
     return redirect('sn_list')
 
