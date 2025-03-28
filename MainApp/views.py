@@ -33,6 +33,12 @@ def add_snippet_page(request):
             return redirect("sn_list")
         return render(request, "pages/add_snippet.html", {'form': form})
 
+@login_required()
+def my_snippets(request):
+    snippets = Snippet.objects.filter(user=request.user)
+    context = {'pagename': 'Мои сниппеты',
+               'snippets': snippets}
+    return render(request, 'pages/view_snippets.html', context)
 
 def snippets_page(request):
     snippets = Snippet.objects.all()
