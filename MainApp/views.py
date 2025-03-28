@@ -5,13 +5,14 @@ from .forms import SnippetForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseNotFound
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 
 
 def index_page(request):
     context = {'pagename': 'PythonBin'}
     return render(request, 'pages/index.html', context)
 
-
+@login_required(login_url='home')
 def add_snippet_page(request):
     #Создаем пустую форму при запросе методом GET
     if request.method == 'GET':
