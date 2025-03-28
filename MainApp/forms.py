@@ -1,5 +1,5 @@
 from django.forms import ModelForm, ValidationError, TextInput, Textarea, CharField, PasswordInput
-from MainApp.models import Snippet
+from MainApp.models import Snippet, Comment
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
@@ -48,3 +48,12 @@ class UserRegistrationForm(ModelForm):
        if commit:
            user.save()
        return user
+
+class CommentForm(ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']
+        labels = {'text': ''}
+        widgets = {
+            'text': Textarea(attrs={'placeholder': "Комментарий для сниппета"})
+        }
