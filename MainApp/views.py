@@ -4,6 +4,8 @@ from MainApp.models import Snippet
 from .forms import SnippetForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, HttpResponseNotFound
+from django.contrib import auth
+
 
 def index_page(request):
     context = {'pagename': 'PythonBin'}
@@ -23,7 +25,10 @@ def add_snippet_page(request):
     if request.method == 'POST':
         form = SnippetForm(request.POST)
         if form.is_valid():
-            form.save()
+            snippet=form.save(commit=False)
+            if request.user.is_authenticated:
+                snippet.user = request.user
+                snippet.save()
             return redirect("sn_list")
         return render(request, "pages/add_snippet.html", {'form': form})
 
@@ -76,3 +81,23 @@ def snippets_delete(request, id):
         snippet = get_object_or_404(Snippet, id=id)
         snippet.delete()
     return redirect('sn_list')
+
+
+def login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        print("username=", username)
+        print("password=", password)
+        user = auth.authenticate(request, username=username, password=password)
+        if user is not None:
+            auth.login(request, user)
+        else:
+            # Return error message
+            pass
+    return redirect('home')
+#return redirect(request.META.get('HTTP_REFERER', '/'))
+
+def logout(request):
+    auth.logout(request)
+    return redirect('home')
